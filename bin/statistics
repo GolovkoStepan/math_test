@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'csv'
+require_relative '../lib/statistic'
+require_relative '../config/redis'
+
+stats    = Statistic.new(RedisConnection.redis).all
+filename = "report_#{Time.now.strftime('%d-%m-%Y')}"
+
+CSV.open("#{filename}.csv", 'w', col_sep: ';') do |csv|
+  csv << %w[name age correct_count total_count solve_time solve_time_avg]
+  stats.each do |row|
+    csv << [
+      row['name'],
+      row['age'],
+      row['correct_count'],
+      row['total_count'],
+      row['solve_time'],
+      row['solve_time_avg']
+    ]
+  end
+end
